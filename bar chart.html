@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <style>
+			canvas{
+        		border: 1px solid red;
+        	}
+        </style>
+    </head>
+    <body>
+    	<canvas width="600" height="400"></canvas>
+    </body>
+    <script>
+    var vas=document.querySelector('canvas');
+    var ctx=vas.getContext('2d');
+
+    //设置留白
+    var marginTop=20,
+    	marginRight=20,
+    	marginBottom=50,
+    	marginLeft=50;
+
+   	//设置画布的宽高
+   	var W=vas.width,
+   		H=vas.height;
+
+    //设置原点
+    var x0=marginLeft,
+    	y0=H-marginBottom;
+
+    //设置 箭头宽高
+    var arrowWidth=20,
+    	arrowHeight=10;
+
+    //绘制x轴 y轴
+    ctx.beginPath();
+    ctx.moveTo(x0,marginTop);
+    ctx.lineTo(x0,y0);
+    ctx.lineTo(W-marginRight,y0);
+    ctx.stroke();
+
+    //绘制x轴箭头
+    ctx.beginPath();
+    ctx.moveTo(W-marginRight-arrowWidth,y0-arrowHeight/2);
+    ctx.lineTo(W-marginRight-arrowWidth/2,y0);
+    ctx.lineTo(W-marginRight-arrowWidth,y0+arrowHeight/2);
+    ctx.lineTo(W-marginRight,y0);
+    ctx.closePath();
+    ctx.fill();
+
+    //绘制y轴 箭头
+    ctx.beginPath();
+    ctx.moveTo(x0-arrowHeight/2,marginTop+arrowWidth);
+    ctx.lineTo(x0,marginTop+arrowWidth/2);
+    ctx.lineTo(x0+arrowHeight/2,marginTop+arrowWidth);
+    ctx.lineTo(x0,marginTop);
+    ctx.closePath();
+    ctx.fill();
+
+    //获取矩形图的宽高
+    var boxW=W-marginLeft-marginRight-arrowWidth,
+    	boxH=H-marginTop-marginBottom-arrowWidth;
+
+    //绘制条形图
+    ctx.beginPath();
+
+    //封装 获取4个随机数
+   	function random(max,min){
+   		return parseInt((max-min)*Math.random())+min;
+   	}
+
+   	//获取X轴上的4个点
+   	var datas = [];
+   	var count=random(0,20);
+   	for(var i = 0 ;i < count ; i++){
+   		datas.push( random( 40 , 160) );
+   	}
+
+   	//获取每一部分的宽度
+   	var imgW = boxW / (datas.length+1);
+   	//获取随机数中的最大值
+   	var max=Math.max.apply(null , datas);
+
+   	//计算比率
+   	var k = boxH / max;
+
+   	//将datas改写成[value={x:... , y:...} {} {} {}]
+   	var newDatas=datas.map(function(v,i){
+   		var o={};
+   		o.value=v;
+   		o.start={ x: x0 + ( i + 1)*imgW, y: y0};
+   		o.end={ x: x0 + ( i + 1)*imgW, y: y0-v*k};
+   		return o;
+   	});
+
+   	newDatas.forEach(function(v){
+   		ctx.moveTo( v.start.x , v.start.y );
+   		ctx.lineTo( v.end.x , v.end.y);
+   	});
+
+   	ctx.strokeStyle = 'pink';
+   	ctx.lineWidth = imgW *2/5;
+   	ctx.stroke();
+
+    </script>
+</html>
